@@ -1,0 +1,35 @@
+.relative {
+    position: relative;
+  }
+  
+  .absolute {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px; 
+    background: #0D6EFD; 
+    width: 100%;
+    transform-origin: 0 0;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+    z-index: 1000; 
+  }
+  
+  
+  
+  
+  .fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
