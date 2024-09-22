@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken');
-const Auth = require('../models/auth'); // Change to match your Auth model filename
+const Auth = require('../models/auth'); 
 
 const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];

@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
     res.send("api");
 });
 
-// userRouter'ın middleware olarak kullanıldığından emin olun
+
 router.use("/user", userRouter);
 
 
