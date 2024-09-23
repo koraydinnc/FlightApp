@@ -1,13 +1,28 @@
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import AuthComponent from './components/authComponent'
-import HomePage from './pages/HomePage'
+import { MainRouter } from './Routers'
+import MainLayout from './layout/MainLayout'
 
 function App() {
 
   return (
-    <div>
-        <HomePage/>
-    </div>
+      <Routes>
+         {MainRouter.map((route, index) => (
+            <Route
+             key={index}
+             path={route.path}
+             element={
+              <MainLayout>
+                <route.component/>
+              </MainLayout>
+             }
+
+            >
+
+            </Route>
+         ))}
+      </Routes> 
+
   )
 }
 

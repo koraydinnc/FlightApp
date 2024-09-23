@@ -1,6 +1,6 @@
 const express = require('express');
 const { register, login } = require('../controllers/auth.js');
-const { fetchFlightsToday,fetchFlightsWithDate,fetchFlightsTomorrow } = require('../controllers/fetch.js');
+const { fetchFlightsToday,fetchFlightsTomorrow } = require('../controllers/fetch.js');
 const authenticateToken = require('../middleware/authantice.js'); 
 
 const router = express.Router();
@@ -10,9 +10,8 @@ router.post('/register', register);
 router.post('/login', login);
 
 //fetch
-router.post('/fetchFlightsToday', fetchFlightsToday);
-router.post('/fetchFlightsWithDate', fetchFlightsWithDate);
-router.post('/fetchFlightsTomorrow', fetchFlightsTomorrow)
+router.get('/fetchFlightsToday', fetchFlightsToday);
+router.get('/fetchFlightsTomorrow', fetchFlightsTomorrow)
 
 
 router.get('/profile', authenticateToken, (req, res) => {

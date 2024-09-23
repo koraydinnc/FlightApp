@@ -1,112 +1,67 @@
-import { Card, Col, DatePicker, Row, Select, Radio, Space } from "antd";
+import { Card, Col, DatePicker, Row, Select, Button } from "antd";
 import airportList from '../../airports.json';
 import { useEffect, useState } from "react";
-import { MdFlightTakeoff, MdOutlineFlightLand } from "react-icons/md";
+import { useFetchFlightsTodayMutation } from '../redux/api/fetchApi';
 
 const FlightSelectComponent = () => {
-    const [data, setData] = useState([]);
-    const [tripType, setTripType] = useState("oneWay");
     const [dates, setDates] = useState({ departure: null, return: null });
+    const [flights, setFlights] = useState([]);
+    const [fetchFlightsToday] = useFetchFlightsTodayMutation();
 
     useEffect(() => {
         const options = airportList.map((airport) => ({
             label: `${airport.iata} - ${airport.name}`,
             value: airport.iata,
         }));
-        setData(options);
+        // Store options if needed, e.g., in state
     }, []);
-
-    const handleTripTypeChange = (e) => {
-        setTripType(e.target.value);
-        if (e.target.value === "oneWay") {
-            setDates((prevDates) => ({ ...prevDates, return: null })); // Tek yön seçildiğinde dönüş tarihini sıfırla
-        }
-    };
 
     const handleDateChange = (field, date) => {
         setDates((prevDates) => ({
-            ...prevDates,
+            ...prevDates, 
             [field]: date
         }));
     };
 
+    const handleFetchFlights = async () => {
+        try {
+            const response = await fetchFlightsToday().unwrap();
+            setFlights(response); // Store the fetched flights
+        } catch (error) {
+            console.error("Failed to fetch flights:", error);
+        }
+    };
+
+    const filteredFlights = flights.filter(flight => {
+        // Implement your filtering logic here
+        // Example: filter by scheduled date or destination
+        const isMatchingDate = dates.departure ? 
+            flight.scheduleDate === dates.departure.format("YYYY-MM-DD") : true;
+        return isMatchingDate;
+    });
+
     return (
         <Row gutter={[16, 16]} justify="center" className="min-w-full">
+            <Col span={8}>
+                <DatePicker 
+                    onChange={(date) => handleDateChange('departure', date)} 
+                    placeholder="Departure Date"
+                />
+            </Col>
+            <Col span={8}>
+                <Button type="primary" onClick={handleFetchFlights}>
+                    Fetch Flights
+                </Button>
+            </Col>
             <Col span={24}>
-                <Card>
-                    <Radio.Group value={tripType} onChange={handleTripTypeChange}>
-                        <Space>
-                            <Radio.Button value="oneWay">Tek Yön</Radio.Button>
-                            <Radio.Button value="roundTrip">Çift Yön</Radio.Button>
-                        </Space>
-                    </Radio.Group>
-                </Card>
-            </Col>
-
-            <Col span={6}>
-                <Card>
-                    <div className="flex items-center">
-                        <MdFlightTakeoff className="mr-2" style={{ fontSize: '24px', color: '#1690ff' }} />
-                        <Select
-                            className="w-full"
-                            showSearch
-                            placeholder="Nereden"
-                            optionFilterProp="label"
-                            onChange={(value) => console.log(value)}
-                            onSearch={(value) => console.log(value)}
-                            filterOption={(input, option) =>
-                                option?.label.toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={data}
-                        />
-                    </div>
-                </Card>
-            </Col>
-
-            {/* Nereye Seçimi */}
-            <Col span={6}>
-                <Card>
-                    <div className="flex items-center">
-                        <MdOutlineFlightLand className="mr-2" style={{ fontSize: '24px', color: '#1690ff' }} />
-                        <Select
-                            className="w-full"
-                            showSearch
-                            placeholder="Nereye"
-                            optionFilterProp="label"
-                            onChange={(value) => console.log(value)}
-                            onSearch={(value) => console.log(value)}
-                            filterOption={(input, option) =>
-                                option?.label.toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={data}
-                        />
-                    </div>
-                </Card>
-            </Col>
-
-            <Col span={6}>
-                <Card>
-                    <DatePicker
-                        className="w-full"
-                        placeholder="Kalkış Tarihi"
-                        value={dates.departure}
-                        onChange={(date) => handleDateChange("departure", date)}
-                    />
-                </Card>
-            </Col>
-
-            {tripType === "roundTrip" && (
-                <Col span={6}>
-                    <Card>
-                        <DatePicker
-                            className="w-full"
-                            placeholder="Dönüş Tarihi"
-                            value={dates.return}
-                            onChange={(date) => handleDateChange("return", date)}
-                        />
+                {filteredFlights.map(flight => (
+                    <Card key={flight.id} title={`Flight ${flight.flightName}`}>
+                        <p>Destination: {flight.route.destinations[0]}</p>
+                        <p>Scheduled Time: {flight.scheduleDateTime}</p>
+                        <p>Actual Landing Time: {flight.actualLandingTime}</p>
                     </Card>
-                </Col>
-            )}
+                ))}
+            </Col>
         </Row>
     );
 };

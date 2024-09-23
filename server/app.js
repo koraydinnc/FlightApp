@@ -15,12 +15,14 @@ app.use(bodyParser.json());
 
 app.use('/api', apiRouter); 
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080
 
 database();
 
-app.listen(8080,function(){
-    console.log('we are on');
-  })
+const listenPort = (PORT) => {
+   console.log(PORT,'RUN')
+}
+
+app.listen(PORT, listenPort(PORT))
 
 

@@ -44,9 +44,5 @@ const fetchFlightsTomorrow = async (req, res) => {
   await fetchFlightData({ scheduleDate: formattedTomorrow, flightDirection: 'A', includedelays: true }, res);
 };
 
-const fetchFlightsWithDate = async (req, res) => {
-  const { scheduleDate, flightDirection, route } = req.query;
-  await fetchFlightData({ scheduleDate, flightDirection, route }, res);
-};
 
-module.exports = { fetchFlightsToday, fetchFlightsTomorrow, fetchFlightsWithDate };
+module.exports = { fetchFlightsToday, fetchFlightsTomorrow };

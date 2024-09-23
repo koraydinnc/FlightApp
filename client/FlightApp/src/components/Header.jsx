@@ -2,8 +2,10 @@ import  { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Logo from '../assets/Logo.png'; 
 import { Button } from 'antd'; 
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate()
   const { scrollYProgress } = useScroll();
   const y = useSpring(useTransform(scrollYProgress, [0, 0.2], [0, -40]), {
     stiffness: 200,
@@ -25,6 +27,11 @@ const Header = () => {
   }, []);
 
   const navigateLogin = () => {
+    navigate('/Login')
+  };
+
+  const navigateHome = () => {
+    navigate('/')
   };
 
   return (
@@ -36,7 +43,7 @@ const Header = () => {
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between">
           <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-700">
-            <img src={Logo} className="h-16 sm:h-24 w-auto" alt="Project Logo" />
+            <img onClick={navigateHome} src={Logo} className="h-16 sm:h-24 w-auto cursor-pointer" alt="Project Logo" />
           </div>
           <div className="flex items-center">
             <Button className="ml-4 text-blue-700" type="default" onClick={navigateLogin}>
