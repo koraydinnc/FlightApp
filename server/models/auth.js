@@ -11,10 +11,16 @@ const AuthSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    tickets: [{
+        flightId: {type: mongoose.Schema.Types.String, ref:'Flight'},
+        purchaseDate: {type: Date, default: new Date()}
+    }],
     date: {
         type: Date,
         default: new Date()
     }
 });
 
-module.exports = mongoose.model('auth', AuthSchema);
+const AuthModel = mongoose.models.auth || mongoose.model('auth', AuthSchema);
+
+module.exports = AuthModel;

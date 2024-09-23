@@ -1,11 +1,14 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Logo from '../assets/Logo.png'; 
-import { Button } from 'antd'; 
+import { Button, message } from 'antd'; 
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { clearUser } from '../redux/reducers/authSlice';
+import UserProfile from './UserProfile';
 
 const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { scrollYProgress } = useScroll();
   const y = useSpring(useTransform(scrollYProgress, [0, 0.2], [0, -40]), {
     stiffness: 200,
@@ -13,7 +16,11 @@ const Header = () => {
     restDelta: 0.1,
   });
 
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+  const [showProfile, setShowProfile] = useState(false);
 
   const handleResize = () => {
     setIsDesktop(window.innerWidth >= 768);
@@ -27,12 +34,15 @@ const Header = () => {
   }, []);
 
   const navigateLogin = () => {
-    navigate('/Login')
+    navigate('/Login');
   };
 
   const navigateHome = () => {
-    navigate('/')
+    navigate('/');
   };
+
+
+
 
   return (
     <>
@@ -45,10 +55,18 @@ const Header = () => {
           <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-700">
             <img onClick={navigateHome} src={Logo} className="h-16 sm:h-24 w-auto cursor-pointer" alt="Project Logo" />
           </div>
-          <div className="flex items-center">
-            <Button className="ml-4 text-blue-700" type="default" onClick={navigateLogin}>
-               Login
-            </Button>
+          <div className="flex items-center relative">
+            {isAuthenticated ? (
+              <>
+           
+                  <UserProfile/>
+          
+              </>
+            ) : (
+              <Button className="ml-4 text-blue-700" type="default" onClick={navigateLogin}>
+                Login
+              </Button>
+            )}
           </div>
         </div>
       </motion.nav>

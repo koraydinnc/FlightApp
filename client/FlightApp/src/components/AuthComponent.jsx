@@ -2,17 +2,30 @@ import { useState } from 'react';
 import { useRegisterMutation, useLoginMutation } from '../redux/api/authApi';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../redux/reducers/authSlice';
 
 const { Title } = Typography;
 
 const AuthComponent = () => {
+  const navigate = useNavigate();
   const [isRegistering, setIsRegistering] = useState(true);
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
+  const dispatch = useDispatch()
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const { email, password, confirmPassword } = formData;
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -22,6 +35,7 @@ const AuthComponent = () => {
 
     try {
       const response = await register({ email, password }).unwrap();
+      dispatch(setUser(response))
       message.success('Registration successful');
       console.log('Registration successful:', response);
     } catch (error) {
@@ -33,8 +47,10 @@ const AuthComponent = () => {
   const handleLogin = async () => {
     try {
       const response = await login({ email, password }).unwrap();
+      dispatch(setUser(response));
       message.success(response.msg);  
       console.log('Login successful:', response);
+      navigate('/');
     } catch (error) {
       message.error('Login failed');
       console.error('Login failed:', error);
@@ -62,30 +78,39 @@ const AuthComponent = () => {
             >
               <Title level={2} className="text-center">Register</Title>
               <Form layout="vertical">
-                <Form.Item label="Email" required>
+                <Form.Item label="Email" required rules={[{ type: 'email', message: 'Please enter a valid email!' }]}>
                   <Input 
                     type="email" 
+                    name="email"
                     value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
+                    onChange={handleChange} 
                     placeholder="Enter your email" 
                   />
                 </Form.Item>
                 <Form.Item label="Password" required>
                   <Input.Password 
+                    name="password"
                     value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
+                    onChange={handleChange} 
                     placeholder="Enter your password" 
                   />
                 </Form.Item>
                 <Form.Item label="Confirm Password" required>
                   <Input.Password 
+                    name="confirmPassword"
                     value={confirmPassword} 
-                    onChange={(e) => setConfirmPassword(e.target.value)} 
+                    onChange={handleChange} 
                     placeholder="Confirm your password" 
                   />
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" block onClick={handleRegister} style={{ marginBottom: '10px' }}>
+                  <Button 
+                    type="primary" 
+                    block 
+                    onClick={handleRegister} 
+                    disabled={password !== confirmPassword}
+                    style={{ marginBottom: '10px' }}
+                  >
                     Register
                   </Button>
                   <Button type="link" block onClick={() => setIsRegistering(false)}>
@@ -105,18 +130,20 @@ const AuthComponent = () => {
             >
               <Title level={2} className="text-center">Login</Title>
               <Form layout="vertical">
-                <Form.Item label="Email" required>
+                <Form.Item label="Email" required rules={[{ type: 'email', message: 'Please enter a valid email!' }]}>
                   <Input 
                     type="email" 
+                    name="email"
                     value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
+                    onChange={handleChange} 
                     placeholder="Enter your email" 
                   />
                 </Form.Item>
                 <Form.Item label="Password" required>
                   <Input.Password 
+                    name="password"
                     value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
+                    onChange={handleChange} 
                     placeholder="Enter your password" 
                   />
                 </Form.Item>

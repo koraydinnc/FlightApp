@@ -14,7 +14,6 @@ const fetchFlightData = async (params, res) => {
         ...params,
         page: 1,
         sort: '+scheduleTime',
-        searchDateTimeField: 'lastUpdatedAt',
       },
     });
 
@@ -31,11 +30,13 @@ const fetchFlightData = async (params, res) => {
   }
 };
 
+// Fetch today's flights
 const fetchFlightsToday = async (req, res) => {
   const today = new Date().toISOString().split('T')[0];
   await fetchFlightData({ scheduleDate: today, flightDirection: 'A', includedelays: true }, res);
 };
 
+// Fetch tomorrow's flights
 const fetchFlightsTomorrow = async (req, res) => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -44,5 +45,38 @@ const fetchFlightsTomorrow = async (req, res) => {
   await fetchFlightData({ scheduleDate: formattedTomorrow, flightDirection: 'A', includedelays: true }, res);
 };
 
+// Fetch flights for a specific date and direction
+const fetchFlightWithDate = async (req, res) => {
+  const { date, flightDirection } = req.query;
 
-module.exports = { fetchFlightsToday, fetchFlightsTomorrow };
+  if (!date) {
+    return res.status(400).json({ message: 'Please provide a valid date in the query parameters' });
+  }
+
+  try {
+    await fetchFlightData({ scheduleDate: date, includedelays: true, flightDirection }, res);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching flight data', error: error.message });
+  }
+};
+
+const fetchSelectedFlight = async ({ id }) => {
+  try {
+    const API_URL = `https://api.schiphol.nl/public-flights/flights/${id}`;
+    const response = await axios.get(API_URL, {
+      headers: {
+        'app_id': process.env.SCHIPHOL_APP_ID,
+        'app_key': process.env.SCHIPHOL_API_KEY,
+        'ResourceVersion': 'v4',
+      }
+    });
+
+    return response.data; 
+  } catch (error) {
+    console.error('Error fetching flight:', error.message);
+    throw new Error('An error occurred while fetching the flight.');
+  }
+};
+
+
+module.exports = { fetchFlightsToday, fetchFlightsTomorrow, fetchFlightWithDate, fetchSelectedFlight };

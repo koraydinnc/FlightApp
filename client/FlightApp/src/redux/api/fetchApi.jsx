@@ -18,9 +18,28 @@ const fetchApi = createApi({
                 method: 'GET',
             }),
         }),
+        fetchFlightsWithDate: builder.mutation({
+            query:({date, flightDirection}) => ({
+                url:'/user/fetchFlightWithDate',
+                method:'GET',
+                params: {
+                    date,
+                    flightDirection
+                }
+            })
+        }),
+        fetchSelectedFlight: builder.mutation({
+            query: ({id}) => ({
+                url:'/user/fetchSelectedFlight',
+                method:'GET',
+                params: {
+                    id
+                }
+            })
+        })
     }),
 });
 
-export const { useFetchFlightsTodayMutation, useFetchFlightsTomorrowMutation } = fetchApi;
+export const { useFetchFlightsTodayMutation, useFetchFlightsTomorrowMutation,useFetchSelectedFlightMutation, useFetchFlightsWithDateMutation } = fetchApi;
 
 export default fetchApi;
