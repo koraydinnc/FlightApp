@@ -48,7 +48,6 @@ const AuthComponent = () => {
     try {
       const response = await login({ email, password }).unwrap();
       dispatch(setUser(response));
-      message.success(response.msg);  
       console.log('Login successful:', response);
       navigate('/');
     } catch (error) {

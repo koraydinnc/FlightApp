@@ -11,7 +11,7 @@ const ticketBuy = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        user.tickets.push({ flightId });
+        user.tickets.push({ flightId, purchaseDate: new Date() }); 
 
         await user.save();
         res.status(200).json({ message: 'Ticket purchased successfully', tickets: user.tickets });
@@ -23,18 +23,15 @@ const ticketBuy = async (req, res) => {
 
 const getUserTickets = async (req, res) => {
     try {
-        const user = await AuthSchema.findById(req.user._id); 
-
+        const user = await AuthSchema.findById(req.user._id).populate('tickets.flightId'); 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const flightInfoPromises = user.tickets.map(async (ticket) => {
-            const flightInfo = await fetchSelectedFlight({ id: ticket.flightId });
-            return { flightId: ticket.flightId, flightInfo, purchaseDate: ticket.purchaseDate };
-        });
-
-        const ticketsWithFlightInfo = await Promise.all(flightInfoPromises);
+        const ticketsWithFlightInfo = user.tickets.map(ticket => ({
+            flightId: ticket.flightId,
+            purchaseDate: ticket.purchaseDate,
+        }));
 
         res.status(200).json({ tickets: ticketsWithFlightInfo });
     } catch (error) {
@@ -43,5 +40,6 @@ const getUserTickets = async (req, res) => {
     }
 };
 
+module.exports = { ticketBuy, getUserTickets };
 
-module.exports = {ticketBuy,getUserTickets}
+

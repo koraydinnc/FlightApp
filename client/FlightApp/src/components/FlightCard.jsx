@@ -1,4 +1,4 @@
-import { Card, Tooltip, Button } from 'antd';
+import { Card, Tooltip, Button, Spin, Alert, message } from 'antd';
 import { 
     ClockCircleOutlined, 
     RocketOutlined, 
@@ -8,10 +8,13 @@ import {
 import { FaPlaneDeparture, FaPlaneArrival } from 'react-icons/fa'; 
 import { useFetchSelectedFlightMutation } from '../redux/api/fetchApi';
 import { useEffect } from 'react';
+import { useBuyTicketsMutation } from '../redux/api/ticketsApi';
+import { useSelector } from 'react-redux';
 
 const FlightCard = ({ flight, onPurchase }) => {
-  
-    const [fetchSelectedFlight] = useFetchSelectedFlightMutation()
+    const userId = useSelector(state => state?.user?.userInfo?.token);
+    const [fetchSelectedFlight] = useFetchSelectedFlightMutation();
+    const [buyTickets, { isLoading, error }] = useBuyTicketsMutation();
 
     const {
         flightName,
@@ -21,9 +24,7 @@ const FlightCard = ({ flight, onPurchase }) => {
         estimatedLandingTime,
         publicFlightState: { flightStates },
         aircraftType: { iataMain, iataSub },
-        isOperationalFlight,
         id,
-        flightDirection,
     } = flight;
 
     const flightStatus = flightStates[0];
@@ -35,9 +36,14 @@ const FlightCard = ({ flight, onPurchase }) => {
         }
     }, [id, fetchSelectedFlight]);
 
-    const handlePurchaseClick = () => {
+    const handlePurchaseClick = async () => {
         if (onPurchase) {
-            onPurchase(flight); 
+            onPurchase(flight);
+            try {
+                await buyTickets({ userId, flightId: id }).unwrap();
+            } catch (err) {
+                console.error(err);
+            }
         }
     };
 
@@ -52,38 +58,38 @@ const FlightCard = ({ flight, onPurchase }) => {
                 }
                 bordered={false}
             >
+                {isLoading && <Spin />}
+                {error && <Alert message="Error" description={error.message} type="error" showIcon />}
+
                 <div className="grid grid-cols-3 gap-4">
                     <Tooltip title="Departure Airport">
                         <p className="flex items-center">
                             <FaPlaneDeparture className="mr-2 text-blue-500" /> {destinations[0]}
                         </p>
                     </Tooltip>
-
                     <Tooltip title="Scheduled Departure Time">
                         <p className="flex items-center">
                             <ClockCircleOutlined className="mr-2" /> {new Date(scheduleDateTime).toLocaleTimeString()}
                         </p>
                     </Tooltip>
-
                     <Tooltip title="Estimated Landing Time">
                         <p className="flex items-center">
                             <FaPlaneArrival className="mr-2 text-green-500" /> Estimated Landing: {new Date(estimatedLandingTime).toLocaleTimeString()}
                         </p>
                     </Tooltip>
                 </div>
+
                 <div className="grid grid-cols-3 gap-4 mt-2">
                     <Tooltip title="Actual Landing Time">
                         <p className="flex items-center">
                             Actual Landing: {actualLandingTime ? new Date(actualLandingTime).toLocaleTimeString() : 'N/A'}
                         </p>
                     </Tooltip>
-
                     <Tooltip title="Aircraft Information">
                         <p className="flex items-center">
                             Aircraft: {iataMain} ({iataSub})
                         </p>
                     </Tooltip>
-
                     <Tooltip title="Flight Status">
                         <p className="flex items-center">
                             Status: 
@@ -93,8 +99,14 @@ const FlightCard = ({ flight, onPurchase }) => {
                         </p>
                     </Tooltip>
                 </div>
+
                 <div className="mt-4 flex justify-end">
-                    <Button type="primary" onClick={handlePurchaseClick} className="text-center">
+                    <Button 
+                        type="primary" 
+                        onClick={handlePurchaseClick} 
+                        loading={isLoading} // Show loading state on button
+                        className="text-center"
+                    >
                         Satın Al
                     </Button>
                 </div>

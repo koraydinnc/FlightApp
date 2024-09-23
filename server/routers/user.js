@@ -18,7 +18,7 @@ router.get('^/fetchSelectedFlight', fetchSelectedFlight)
 
 //buy
 router.post('/ticketBuy', authenticateToken, ticketBuy)
-router.get('/getUserTickets', authenticateToken,getUserTickets)
+router.get('/getUserTickets/:userId', authenticateToken,getUserTickets)
 
 
 router.get('/profile', authenticateToken, (req, res) => {

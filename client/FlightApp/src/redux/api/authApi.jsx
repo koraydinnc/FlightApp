@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-const baseUrl = import.meta.env.REACT_APP_API_URI || 'http://localhost:8080/api'; 
+import { message } from 'antd'; 
+const baseUrl = import.meta.env.REACT_APP_API_URI || 'http://localhost:8080/api';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -19,7 +19,15 @@ export const authApi = createApi({
         method: 'POST',
         body: userData,
       }),
-      transformResponse: (response) => response, 
+      transformResponse: (response) => {
+        const token = response.token; 
+        if (token) {
+          localStorage.setItem('authLogin', token);
+          message.success('Login Successful');
+          return token;
+        }
+        throw new Error('Login failed');
+      },
     }),
   }),
 });

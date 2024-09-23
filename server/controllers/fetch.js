@@ -30,13 +30,11 @@ const fetchFlightData = async (params, res) => {
   }
 };
 
-// Fetch today's flights
 const fetchFlightsToday = async (req, res) => {
   const today = new Date().toISOString().split('T')[0];
   await fetchFlightData({ scheduleDate: today, flightDirection: 'A', includedelays: true }, res);
 };
 
-// Fetch tomorrow's flights
 const fetchFlightsTomorrow = async (req, res) => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -45,7 +43,6 @@ const fetchFlightsTomorrow = async (req, res) => {
   await fetchFlightData({ scheduleDate: formattedTomorrow, flightDirection: 'A', includedelays: true }, res);
 };
 
-// Fetch flights for a specific date and direction
 const fetchFlightWithDate = async (req, res) => {
   const { date, flightDirection } = req.query;
 
@@ -60,7 +57,8 @@ const fetchFlightWithDate = async (req, res) => {
   }
 };
 
-const fetchSelectedFlight = async ({ id }) => {
+const fetchSelectedFlight = async (req, res) => {
+  const { id } = req.query;
   try {
     const API_URL = `https://api.schiphol.nl/public-flights/flights/${id}`;
     const response = await axios.get(API_URL, {
@@ -68,15 +66,18 @@ const fetchSelectedFlight = async ({ id }) => {
         'app_id': process.env.SCHIPHOL_APP_ID,
         'app_key': process.env.SCHIPHOL_API_KEY,
         'ResourceVersion': 'v4',
-      }
+      },
     });
 
-    return response.data; 
+    if (!response.data) {
+      return res.status(404).json({ message: 'Flight not found' });
+    }
+
+    res.status(200).json(response.data); 
   } catch (error) {
     console.error('Error fetching flight:', error.message);
-    throw new Error('An error occurred while fetching the flight.');
+    res.status(500).json({ message: 'Failed to fetch flight data', error: error.message });
   }
 };
-
 
 module.exports = { fetchFlightsToday, fetchFlightsTomorrow, fetchFlightWithDate, fetchSelectedFlight };
