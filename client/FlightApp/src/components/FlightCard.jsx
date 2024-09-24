@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const FlightCard = ({ flight, onPurchase }) => {
     const { t } = useTranslation(); // Initialize translation function
-    const userId = useSelector(state => state?.user?.userInfo?.token); // Get user ID or token
+    const userId = useSelector(state => state?.user?.userInfo?.user._id); // Get user ID or token
     const [fetchSelectedFlight] = useFetchSelectedFlightMutation();
     const [buyTickets, { isLoading, error }] = useBuyTicketsMutation();
 
@@ -31,7 +31,6 @@ const FlightCard = ({ flight, onPurchase }) => {
 
     const flightStatus = flightStates[0];
     const statusIcon = flightStatus === 'SCH' ? <CheckCircleOutlined /> : <WarningOutlined />;
-
     useEffect(() => {
         if (id) {
             fetchSelectedFlight({ id }); 
@@ -47,7 +46,7 @@ const FlightCard = ({ flight, onPurchase }) => {
         if (onPurchase) {
             onPurchase(flight);
             try {
-                await buyTickets({ userId, flightId: id }).unwrap();
+                await buyTickets({ userId: userId, flightId: id }).unwrap();
             } catch (err) {
                 console.log(err);
             }

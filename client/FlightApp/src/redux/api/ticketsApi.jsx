@@ -20,10 +20,10 @@ const ticketsApi = createApi({
   }),
   endpoints: (builder) => ({
     buyTickets: builder.mutation({
-      query: ({ flightId }) => ({
+      query: ({ userId, flightId }) => ({
         url: '/user/ticketBuy',
         method: 'POST',
-        body: { flightId },
+        body: { userId,flightId },
       }),
       transformResponse: (response) => {
         message.success('Ticket purchased successfully');

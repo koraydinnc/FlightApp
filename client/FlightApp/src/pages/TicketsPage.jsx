@@ -7,27 +7,26 @@ import { useTranslation } from 'react-i18next';
 
 const TicketsPage = () => {
     const { userId } = useParams();
-    const [getTickets, { data: tickets, isLoading, error }] = useGetTicketsMutation(); 
-    const [fetchSelectedFlight, { data: flightDetails, isLoading: loadingFlightDetails, error: flightError }] = useFetchSelectedFlightMutation();
+    const [getTickets, { data, isLoading, error }] = useGetTicketsMutation(); 
+    const [fetchSelectedFlight, { data: flightDetails = [], isLoading: loadingFlightDetails, error: flightError }] = useFetchSelectedFlightMutation();
     const { t } = useTranslation();
 
+    const tickets = data?.tickets || []; 
+
     useEffect(() => {
-        // Fetch tickets when the component mounts
         getTickets({ userId });
     }, [getTickets, userId]); 
 
     useEffect(() => {
-        // Ensure tickets is an array before mapping
         if (Array.isArray(tickets) && tickets.length > 0) {
-            const ticketIds = tickets.map(ticket => ticket._id); // Accessing _id directly
-            console.log(ticketIds); 
-            fetchSelectedFlight({ id: ticketIds }); 
+            tickets.forEach(ticket => {
+                fetchSelectedFlight({ id: ticket._id });  // Send one request per ticket ID
+            });
         } else {
             console.error('Tickets is not an array or is empty:', tickets);
         }
     }, [tickets, fetchSelectedFlight]);
 
-    // Loading and error handling
     if (isLoading || loadingFlightDetails) {
         return <Spin size="large" />;
     }
@@ -40,9 +39,6 @@ const TicketsPage = () => {
         return <Alert message={t('Failed to fetch flight details')} type="error" />;
     }
 
-    console.log(tickets);
-    console.log(flightDetails);
-
     return (
         <div>
             <h1>{t('My Tickets')}</h1>
@@ -51,6 +47,22 @@ const TicketsPage = () => {
                     itemLayout="horizontal"
                     dataSource={tickets}
                     renderItem={(ticket) => {
-                        const flightDetail = flightDetails ? flightDetails.find(flight => flight._id === ticket.flightId) : null;
+                        const flightDetail = flightDetails.find(flight => flight._id === ticket.flightId);
+                        return (
+                            <List.Item>
+                                <List.Item.Meta
+                                    title={ticket.title || t('Ticket title not available')}
+                                    description={flightDetail ? flightDetail.name : t('Flight details not available')}
+                                />
+                            </List.Item>
+                        );
+                    }}
+                />
+            ) : (
+                <Alert message={t('No tickets found')} type="info" />
+            )}
+        </div>
+    );
+};
 
-                       
+export default TicketsPage;
