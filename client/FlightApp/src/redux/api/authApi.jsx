@@ -20,11 +20,11 @@ export const authApi = createApi({
         body: userData,
       }),
       transformResponse: (response) => {
-        const token = response.token; 
-        if (token) {
-          localStorage.setItem('authLogin', token);
+        
+        if (response.token) {
+          localStorage.setItem('authLogin', response.token);
           message.success('Login Successful');
-          return token;
+          return response;
         }
         throw new Error('Login failed');
       },

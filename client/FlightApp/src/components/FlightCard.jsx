@@ -10,9 +10,11 @@ import { useFetchSelectedFlightMutation } from '../redux/api/fetchApi';
 import { useEffect } from 'react';
 import { useBuyTicketsMutation } from '../redux/api/ticketsApi';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const FlightCard = ({ flight, onPurchase }) => {
-    const userId = useSelector(state => state?.user?.userInfo?.token);
+    const { t } = useTranslation(); // Initialize translation function
+    const userId = useSelector(state => state?.user?.userInfo?.token); // Get user ID or token
     const [fetchSelectedFlight] = useFetchSelectedFlightMutation();
     const [buyTickets, { isLoading, error }] = useBuyTicketsMutation();
 
@@ -37,12 +39,17 @@ const FlightCard = ({ flight, onPurchase }) => {
     }, [id, fetchSelectedFlight]);
 
     const handlePurchaseClick = async () => {
+        if (!userId) {
+            message.error(t('You must be logged in to purchase tickets.'));
+            return;
+        }
+
         if (onPurchase) {
             onPurchase(flight);
             try {
                 await buyTickets({ userId, flightId: id }).unwrap();
             } catch (err) {
-                console.error(err);
+                console.log(err);
             }
         }
     };
@@ -53,46 +60,45 @@ const FlightCard = ({ flight, onPurchase }) => {
                 title={
                     <div className="flex items-center text-lg font-semibold">
                         <RocketOutlined className="mr-2 text-blue-500" />
-                        Flight: {flightName}
+                        {t('Flight')}: {flightName}
                     </div>
                 }
                 bordered={false}
             >
                 {isLoading && <Spin />}
-                {error && <Alert message="Error" description={error.message} type="error" showIcon />}
 
                 <div className="grid grid-cols-3 gap-4">
-                    <Tooltip title="Departure Airport">
+                    <Tooltip title={t('Departure Airport')}>
                         <p className="flex items-center">
                             <FaPlaneDeparture className="mr-2 text-blue-500" /> {destinations[0]}
                         </p>
                     </Tooltip>
-                    <Tooltip title="Scheduled Departure Time">
+                    <Tooltip title={t('Scheduled Departure Time')}>
                         <p className="flex items-center">
                             <ClockCircleOutlined className="mr-2" /> {new Date(scheduleDateTime).toLocaleTimeString()}
                         </p>
                     </Tooltip>
-                    <Tooltip title="Estimated Landing Time">
+                    <Tooltip title={t('Estimated Landing Time')}>
                         <p className="flex items-center">
-                            <FaPlaneArrival className="mr-2 text-green-500" /> Estimated Landing: {new Date(estimatedLandingTime).toLocaleTimeString()}
+                            <FaPlaneArrival className="mr-2 text-green-500" /> {t('Estimated Landing')}: {new Date(estimatedLandingTime).toLocaleTimeString()}
                         </p>
                     </Tooltip>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 mt-2">
-                    <Tooltip title="Actual Landing Time">
+                    <Tooltip title={t('Actual Landing Time')}>
                         <p className="flex items-center">
-                            Actual Landing: {actualLandingTime ? new Date(actualLandingTime).toLocaleTimeString() : 'N/A'}
+                            {t('Actual Landing')}: {actualLandingTime ? new Date(actualLandingTime).toLocaleTimeString() : 'N/A'}
                         </p>
                     </Tooltip>
-                    <Tooltip title="Aircraft Information">
+                    <Tooltip title={t('Aircraft Information')}>
                         <p className="flex items-center">
-                            Aircraft: {iataMain} ({iataSub})
+                            {t('Aircraft')}: {iataMain} ({iataSub})
                         </p>
                     </Tooltip>
-                    <Tooltip title="Flight Status">
+                    <Tooltip title={t('Flight Status')}>
                         <p className="flex items-center">
-                            Status: 
+                            {t('Status')}: 
                             <span className={`ml-2 font-semibold px-2 py-1 rounded-lg ${flightStatus === 'SCH' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
                                 {statusIcon} {flightStatus}
                             </span>
@@ -104,10 +110,10 @@ const FlightCard = ({ flight, onPurchase }) => {
                     <Button 
                         type="primary" 
                         onClick={handlePurchaseClick} 
-                        loading={isLoading} // Show loading state on button
+                        loading={isLoading} 
                         className="text-center"
                     >
-                        Satın Al
+                        {t('Purchase')} 
                     </Button>
                 </div>
             </Card>

@@ -12,8 +12,8 @@ const AuthSchema = new mongoose.Schema({
         required: true,
     },
     tickets: [{
-        flightId: {type: mongoose.Schema.Types.String, ref:'Flight'},
-        purchaseDate: {type: Date, default: new Date()}
+        flightId: { type: mongoose.Schema.Types.ObjectId, ref: 'flightId' },
+        purchaseDate: { type: Date, default: new Date() }
     }],
     date: {
         type: Date,

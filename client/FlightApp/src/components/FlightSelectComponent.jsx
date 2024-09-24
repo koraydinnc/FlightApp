@@ -63,10 +63,13 @@ const FlightSelectComponent = () => {
         }
     };
 
+    useEffect(() => {
+        handleFetchTodayFlights();
+    }, []);
 
     useEffect(() => {
-        if (flightDirection) {
-            handleFetchWithDate({date: dates.departure, flightDirection});
+        if (flightDirection && dates.departure) {
+            handleFetchWithDate();
         }
     }, [flightDirection, dates.departure]);
 
@@ -148,14 +151,16 @@ const FlightSelectComponent = () => {
 
             {(day === 'today' || day === 'custom') && (
                 <Col span={24}>
+                    <span>Today Flights</span>
                     {paginatedFlights.map(flight => (
                         <FlightCard key={flight.id} flight={flight} onPurchase={handlePurchaseFlight} />
                     ))}
                 </Col>
             )}
-
+             
             {day === 'tomorrow' && (
                 <Col span={24}>
+                    <span>Tomorrow Flights</span>
                     {flights.map(flight => (
                         <FlightCard key={flight.id} flight={flight} onPurchase={handlePurchaseFlight} />
                     ))}

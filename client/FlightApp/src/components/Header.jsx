@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearUser } from '../redux/reducers/authSlice';
 import UserProfile from './UserProfile';
+import LanguageDropdown from '../locales/LanguageDropDown';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -55,10 +56,13 @@ const Header = () => {
           <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-700">
             <img onClick={navigateHome} src={Logo} className="h-16 sm:h-24 w-auto cursor-pointer" alt="Project Logo" />
           </div>
+          <div>
+           <LanguageDropdown/>
+          </div>
           <div className="flex items-center relative">
             {isAuthenticated ? (
               <>
-           
+                       
                   <UserProfile/>
           
               </>

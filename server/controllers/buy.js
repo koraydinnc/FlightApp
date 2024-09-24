@@ -23,19 +23,15 @@ const ticketBuy = async (req, res) => {
 
 const getUserTickets = async (req, res) => {
     try {
-        const user = await AuthSchema.findById(req.user._id).populate('tickets.flightId'); 
+        const user = await AuthSchema.findById(req.user._id).populate('tickets'); 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const ticketsWithFlightInfo = user.tickets.map(ticket => ({
-            flightId: ticket.flightId,
-            purchaseDate: ticket.purchaseDate,
-        }));
 
-        res.status(200).json({ tickets: ticketsWithFlightInfo });
+        res.status(200).json({ tickets: user.tickets });
     } catch (error) {
-        console.error(error);
+        console.error(error);a
         res.status(500).send('Server error');
     }
 };

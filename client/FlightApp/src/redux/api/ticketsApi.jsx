@@ -20,23 +20,25 @@ const ticketsApi = createApi({
   }),
   endpoints: (builder) => ({
     buyTickets: builder.mutation({
-      query: ({ userId, flightId }) => ({
+      query: ({ flightId }) => ({
         url: '/user/ticketBuy',
         method: 'POST',
-        body: { userId, flightId },
+        body: { flightId },
       }),
       transformResponse: (response) => {
         message.success('Ticket purchased successfully');
         return response;
       },
       transformErrorResponse: (error) => {
-        message.error('Failed to purchase ticket');
+        if (error.status === 403) {
+          message.error('Login required to purchase tickets');
+        }
         return error;
       },
     }),
-    getTickets: builder.query({
-      query: ({ userId }) => ({
-        url: `/user/getUserTickets?userId=${userId}`,
+    getTickets: builder.mutation({
+      query: ({userId}) => ({
+        url: `/user/getUserTickets/${userId}`,
         method: 'GET',
       }),
       transformResponse: (response) => {
@@ -51,5 +53,5 @@ const ticketsApi = createApi({
   }),
 });
 
-export const { useBuyTicketsMutation, useGetTicketsQuery } = ticketsApi;
+export const { useBuyTicketsMutation, useGetTicketsMutation } = ticketsApi;
 export default ticketsApi;

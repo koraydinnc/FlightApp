@@ -3,17 +3,19 @@ import { useRegisterMutation, useLoginMutation } from '../redux/api/authApi';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/reducers/authSlice';
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
 const AuthComponent = () => {
+  const {t} = useTranslation()
   const navigate = useNavigate();
   const [isRegistering, setIsRegistering] = useState(true);
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -35,7 +37,8 @@ const AuthComponent = () => {
 
     try {
       const response = await register({ email, password }).unwrap();
-      dispatch(setUser(response))
+      localStorage.setItem('authLoginToken', response.token)
+      dispatch(setUser(response));
       message.success('Registration successful');
       console.log('Registration successful:', response);
     } catch (error) {
@@ -47,12 +50,23 @@ const AuthComponent = () => {
   const handleLogin = async () => {
     try {
       const response = await login({ email, password }).unwrap();
+      localStorage.setItem('authLoginToken', response.token)
       dispatch(setUser(response));
       console.log('Login successful:', response);
       navigate('/');
     } catch (error) {
       message.error('Login failed');
       console.error('Login failed:', error);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      if (isRegistering) {
+        handleRegister();
+      } else {
+        handleLogin();
+      }
     }
   };
 
@@ -64,102 +78,78 @@ const AuthComponent = () => {
 
   return (
     <div className="flex items-center justify-center w-full h-screen">
-      <div className="w-full max-w-md">
-        <AnimatePresence mode="wait">
-          {isRegistering ? (
-            <motion.div
-              key="register"
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              variants={transitionVariant}
-              transition={{ duration: 0.5 }}
-            >
-              <Title level={2} className="text-center">Register</Title>
-              <Form layout="vertical">
-                <Form.Item label="Email" required rules={[{ type: 'email', message: 'Please enter a valid email!' }]}>
-                  <Input 
-                    type="email" 
-                    name="email"
-                    value={email} 
-                    onChange={handleChange} 
-                    placeholder="Enter your email" 
-                  />
-                </Form.Item>
-                <Form.Item label="Password" required>
-                  <Input.Password 
-                    name="password"
-                    value={password} 
-                    onChange={handleChange} 
-                    placeholder="Enter your password" 
-                  />
-                </Form.Item>
-                <Form.Item label="Confirm Password" required>
-                  <Input.Password 
-                    name="confirmPassword"
-                    value={confirmPassword} 
-                    onChange={handleChange} 
-                    placeholder="Confirm your password" 
-                  />
-                </Form.Item>
-                <Form.Item>
-                  <Button 
-                    type="primary" 
-                    block 
-                    onClick={handleRegister} 
-                    disabled={password !== confirmPassword}
-                    style={{ marginBottom: '10px' }}
-                  >
-                    Register
-                  </Button>
-                  <Button type="link" block onClick={() => setIsRegistering(false)}>
-                    Already have an account? Login
-                  </Button>
-                </Form.Item>
-              </Form>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="login"
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              variants={transitionVariant}
-              transition={{ duration: 0.5 }}
-            >
-              <Title level={2} className="text-center">Login</Title>
-              <Form layout="vertical">
-                <Form.Item label="Email" required rules={[{ type: 'email', message: 'Please enter a valid email!' }]}>
-                  <Input 
-                    type="email" 
-                    name="email"
-                    value={email} 
-                    onChange={handleChange} 
-                    placeholder="Enter your email" 
-                  />
-                </Form.Item>
-                <Form.Item label="Password" required>
-                  <Input.Password 
-                    name="password"
-                    value={password} 
-                    onChange={handleChange} 
-                    placeholder="Enter your password" 
-                  />
-                </Form.Item>
-                <Form.Item>
-                  <Button type="primary" block onClick={handleLogin} style={{ marginBottom: '10px' }}>
-                    Login
-                  </Button>
-                  <Button type="link" block onClick={() => setIsRegistering(true)}>
-                    Don't have an account? Register
-                  </Button>
-                </Form.Item>
-              </Form>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+    <div className="w-full max-w-md">
+      <AnimatePresence mode="wait">
+        {isRegistering ? (
+          <motion.div>
+            <Title level={2} className="text-center">{t('Register')}</Title>
+            <Form layout="vertical">
+              <Form.Item label={t('Email')}>
+                <Input 
+                  type="email" 
+                  name="email"
+                  value={email} 
+                  onChange={handleChange} 
+                  placeholder={t('Enter your email')}
+                />
+              </Form.Item>
+              <Form.Item label={t('Password')}>
+                <Input.Password 
+                  name="password"
+                  value={password} 
+                  onChange={handleChange} 
+                  placeholder={t('Enter your password')} 
+                />
+              </Form.Item>
+              <Form.Item label={t('Confirm Password')}>
+                <Input.Password 
+                  name="confirmPassword"
+                  value={confirmPassword} 
+                  onChange={handleChange} 
+                  placeholder={t('Confirm your password')} 
+                />
+              </Form.Item>
+              <Button type="primary" block onClick={handleRegister}>
+                {t('Register')}
+              </Button>
+              <Button type="link" block onClick={() => setIsRegistering(false)}>
+                {t('Already have an account? Login')}
+              </Button>
+            </Form>
+          </motion.div>
+        ) : (
+          <motion.div>
+            <Title level={2} className="text-center">{t('Login')}</Title>
+            <Form layout="vertical">
+              <Form.Item label={t('Email')}>
+                <Input 
+                  type="email" 
+                  name="email"
+                  value={email} 
+                  onChange={handleChange} 
+                  placeholder={t('Enter your email')}
+                />
+              </Form.Item>
+              <Form.Item label={t('Password')}>
+                <Input.Password 
+                  name="password"
+                  value={password} 
+                  onChange={handleChange} 
+                  placeholder={t('Enter your password')} 
+                />
+              </Form.Item>
+              <Button type="primary" block onClick={handleLogin}>
+                {t('Login')}
+              </Button>
+              <Button type="link" block onClick={() => setIsRegistering(true)}>
+                {t('Don\'t have an account? Register')}
+              </Button>
+            </Form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  </div>
   );
 };
 
