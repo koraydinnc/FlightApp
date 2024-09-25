@@ -10,7 +10,7 @@ Bu proje, kullanıcıların uçuş biletlerini görüntüleyip yönetebileceği,
 
 **Sunucu:** Node, Express
 
-  
+**Database:** MongoDB  
 ## Özellikler
 
 Özellikler
@@ -33,9 +33,10 @@ Bu proje, kullanıcıların uçuş biletlerini görüntüleyip yönetebileceği,
  server: npm start
 
 ```
-    
-## Ekran Görüntüleri
+    ## Ekran Görüntüleri
 
-![Uygulama Ekran Görüntüsü]([url=https://ibb.co/5FZ8J6n][img]https://i.ibb.co/16cq4Ld/dsadsa.png[/img][/url])
-
-  
+[![Uygulama Ekran Görüntüsü](https://i.ibb.co/16cq4Ld/dsadsa.png)](https://ibb.co/5FZ8J6n)
+[![Ekran Görüntüsü 1](https://i.ibb.co/tqnWZ8c/screenshot1.png)](https://ibb.co/tqnWZ8c)
+[![Ekran Görüntüsü 2](https://i.ibb.co/B68q0Rr/screenshot2.png)](https://ibb.co/B68q0Rr)
+[![Ekran Görüntüsü 3](https://i.ibb.co/CH0p8PF/screenshot3.png)](https://ibb.co/CH0p8PF)
+ 
