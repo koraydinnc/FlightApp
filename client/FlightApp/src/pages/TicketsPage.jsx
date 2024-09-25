@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetTicketsMutation } from '../redux/api/ticketsApi';
 import { useFetchSelectedFlightMutation } from '../redux/api/fetchApi';
-import { Spin, Alert, List, Card, Typography, Row, Col, Tag } from 'antd';
+import { Spin, Alert, Card, Typography, Row, Col, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 

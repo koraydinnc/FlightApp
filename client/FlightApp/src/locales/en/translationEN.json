@@ -31,5 +31,21 @@
     "Purchase": "Purchase",
      "My Tickets": "My Tickets",
      "Logout": "Logout",
-     "Logged out successfully": "Logged out successfully"
+     "Logged out successfully": "Logged out successfully",
+     "My Tickets": "My Tickets",
+     "Ticket title not available": "Ticket title not available",
+     "Flight Name": "Flight Name",
+     "Flight Number": "Flight Number",
+     "Aircraft Type": "Aircraft Type",
+     "Scheduled Landing": "Scheduled Landing",
+     "Actual Landing": "Actual Landing",
+     "Baggage Claim": "Baggage Claim",
+     "Flight State": "Flight State",
+     "N/A": "N/A",
+     "Not available": "Not available",
+     "Failed to fetch tickets": "Failed to fetch tickets",
+     "No tickets found": "No tickets found",
+     "Flight details not available": "Flight details not available",
+     "Landed": "Landed",
+     "Pending": "Pending"
 }
