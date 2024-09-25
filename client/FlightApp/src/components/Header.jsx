@@ -4,7 +4,6 @@ import Logo from '../assets/Logo.png';
 import { Button, message } from 'antd'; 
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearUser } from '../redux/reducers/authSlice';
 import UserProfile from './UserProfile';
 import LanguageDropdown from '../locales/LanguageDropDown';
 
@@ -18,10 +17,8 @@ const Header = () => {
   });
 
   const { isAuthenticated } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
-  const [showProfile, setShowProfile] = useState(false);
 
   const handleResize = () => {
     setIsDesktop(window.innerWidth >= 768);

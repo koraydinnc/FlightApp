@@ -10,11 +10,11 @@ import { useFetchSelectedFlightMutation } from '../redux/api/fetchApi';
 import { useEffect } from 'react';
 import { useBuyTicketsMutation } from '../redux/api/ticketsApi';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { useTranslation } from 'react-i18next';
 
 const FlightCard = ({ flight, onPurchase }) => {
-    const { t } = useTranslation(); // Initialize translation function
-    const userId = useSelector(state => state?.user?.userInfo?.user._id); // Get user ID or token
+    const { t } = useTranslation(); 
+    const userId = useSelector(state => state?.user?.userInfo?.user._id); 
     const [fetchSelectedFlight] = useFetchSelectedFlightMutation();
     const [buyTickets, { isLoading, error }] = useBuyTicketsMutation();
 
