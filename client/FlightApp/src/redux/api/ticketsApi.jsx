@@ -38,8 +38,9 @@ const ticketsApi = createApi({
     }),
     getTickets: builder.mutation({
       query: ({userId}) => ({
-        url: `/user/getUserTickets/${userId}`,
-        method: 'GET',
+        url: `/user/getUserTickets`,
+        method: 'POST',
+        body: { userId }
       }),
       transformResponse: (response) => {
         message.success('Tickets fetched successfully');

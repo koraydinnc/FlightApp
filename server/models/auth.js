@@ -16,12 +16,8 @@ const AuthSchema = new mongoose.Schema({
     },
     tickets: [{
         flightId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'flightId',
-            validate: {
-                validator: isValidObjectId,
-                message: props => `${props.value} is not a valid ObjectId`
-            }
+           type: String,
+           ref: 'Flight'
         },
         purchaseDate: { type: Date, default: Date.now }
     }],

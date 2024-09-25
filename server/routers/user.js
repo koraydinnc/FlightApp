@@ -18,7 +18,7 @@ router.get('/fetchSelectedFlight', fetchSelectedFlight); // Corrected this route
 
 // Ticket purchase routes
 router.post('/ticketBuy', authenticateToken, ticketBuy);
-router.get('/getUserTickets/:userId', authenticateToken, getUserTickets); // Ensured it uses params
+router.post('/getUserTickets', authenticateToken, getUserTickets); // Ensured it uses params
 
 // Protected profile route
 router.get('/profile', authenticateToken, (req, res) => {
